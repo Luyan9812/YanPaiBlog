@@ -92,6 +92,7 @@ onMounted(async () => {
     background-position: top;
     background-repeat: no-repeat;
     background-size: auto 288px;
+    background-color: #ff7454;
     position: relative;
     height: 268px;
     padding-top: 42px;

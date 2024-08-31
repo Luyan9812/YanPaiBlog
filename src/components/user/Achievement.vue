@@ -26,7 +26,7 @@ const data = reactive([
 
 <style scoped lang="scss">
 .achievement {
-    width: 300px;
+    width: 280px;
     height: fit-content;
     padding: 20px;
     box-sizing: border-box;

@@ -48,40 +48,47 @@
 </script>
 
 <template>
-    <div class="hd_container">
-        <img src="@/assets/logo.svg" style="margin-right: auto;" @click="navigateTo('/index')" />
-        <el-button color="#ff6900" class="publish_btn" @click="navigateTo('/editor')">写文章</el-button>
-        <el-link v-if="!isLogin" :underline="false" class="login_btn" @click="changeLoginState(true)">登录</el-link>
-        <template v-else>
-            <el-badge :is-dot="indexUserInfo.msgCount > 0" class="bell">
-                <el-icon :size="24"><Bell /></el-icon>
-            </el-badge>
-            <el-dropdown trigger="click" placement="bottom">
-                <div class="header">
-                    <el-avatar :size="40" :src="indexUserInfo.photo" />
-                    <el-icon :size="20" color="#fff"><CaretBottom /></el-icon>
-                </div>
-                <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item @click="navigateTo('/user')">个人主页</el-dropdown-item>
-                        <el-dropdown-item @click="logout">登出</el-dropdown-item>
-                    </el-dropdown-menu>
-                </template>
-            </el-dropdown>
-        </template>
-        <LoginDialog :success="loginSuccess" />
+    <div class="hd_ext">
+        <div class="hd_container">
+            <img src="@/assets/logo.svg" style="margin-right: auto;" @click="navigateTo('/index')" />
+            <el-button color="#ff6900" class="publish_btn" @click="navigateTo('/editor')">写文章</el-button>
+            <el-link v-if="!isLogin" :underline="false" class="login_btn" @click="changeLoginState(true)">登录</el-link>
+            <template v-else>
+                <el-badge :is-dot="indexUserInfo.msgCount > 0" class="bell">
+                    <el-icon :size="24"><Bell /></el-icon>
+                </el-badge>
+                <el-dropdown trigger="click" placement="bottom">
+                    <div class="header">
+                        <el-avatar :size="40" :src="indexUserInfo.photo" />
+                        <el-icon :size="20" color="#fff"><CaretBottom /></el-icon>
+                    </div>
+                    <template #dropdown>
+                        <el-dropdown-menu>
+                            <el-dropdown-item @click="navigateTo('/user')">个人主页</el-dropdown-item>
+                            <el-dropdown-item @click="logout">登出</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
+            </template>
+            <LoginDialog :success="loginSuccess" />
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+.hd_ext {
+    width: 100%;
+    height: fit-content;
+    background-color: rgba(36, 41, 47, 1);
+
     .hd_container {
-        width: 100%;
+        width: 1200px;
         height: 60px;
-        padding: 8px 156px;
+        padding: 8px 0;
+        margin: auto;
         display: flex; 
         align-items: center;
         box-sizing: border-box;
-        background-color: rgba(36, 41, 47, 1);
 
         .publish_btn {
             color: #fff;
@@ -127,4 +134,5 @@
             }
         }
     }
+}
 </style>

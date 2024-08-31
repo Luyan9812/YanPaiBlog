@@ -34,7 +34,7 @@ function selectTab(id: number) {
 
 <style scoped lang="scss">
     .trace_container {
-        width: 100%;
+        width: 900px;
         margin-right: 20px;
         border-radius: 4px;
         margin-bottom: 20px;

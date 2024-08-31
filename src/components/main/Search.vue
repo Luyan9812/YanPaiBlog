@@ -16,39 +16,47 @@ function handleSwitchType(id: number) {
 </script>
 
 <template>
-    <div class="seh_container">
-        <template v-for="type in types" :key="type.id">
-            <div @click="handleSwitchType(type.id)" 
-                :class="{'types': true, 'types_active': type.active}">
-                {{ type.categoryName }}
-            </div>
-        </template>
-        <el-icon size="20" style="margin-left: auto;"><Search  /></el-icon>
+    <div class="seh_ext">
+        <div class="seh_container">
+            <template v-for="type in types" :key="type.id">
+                <div @click="handleSwitchType(type.id)" 
+                    :class="{'types': true, 'types_active': type.active}">
+                    {{ type.categoryName }}
+                </div>
+            </template>
+            <el-icon size="20" style="margin-left: auto;"><Search  /></el-icon>
+        </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.seh_container {
+.seh_ext {
     width: 100%;
-    height: 58px;
-    padding: 8px 156px;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    background-color: #fff;;
+    height: fit-content;
+    background-color: #fff;
 
-    .types {
-        font-size: 18px;
-        font-weight: 600;
-        margin-right: 48px;
-        color: #212529;
-        cursor: pointer;
-    }
-    .types:hover {
-        color: #ff6900;
-    }
-    .types_active {
-        color: #ff6900;
+    .seh_container {
+        width: 1200px;
+        height: 58px;
+        margin: auto;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+
+        .types {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 48px;
+            color: #212529;
+            cursor: pointer;
+        }
+        .types:hover {
+            color: #ff6900;
+        }
+        .types_active {
+            color: #ff6900;
+        }
     }
 }
 </style>

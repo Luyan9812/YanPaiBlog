@@ -41,50 +41,57 @@ const handleCurrentChange = (val: number) => {
 </script>
 
 <template>
-    <div class="al_container">
-        <div v-for="article in articles" :key="article.id" class="article_item">
-            <div class="item_content">
-                <div class="cl">
-                    <el-link href="#" :underline="false">{{ article.title }}</el-link>
-                    <el-text line-clamp="2">
-                        {{ article.summary }}
-                    </el-text>
+    <div class="al_ext">
+        <div class="al_container">
+            <div v-for="article in articles" :key="article.id" class="article_item">
+                <div class="item_content">
+                    <div class="cl">
+                        <el-link href="#" :underline="false">{{ article.title }}</el-link>
+                        <el-text line-clamp="2">
+                            {{ article.summary }}
+                        </el-text>
+                    </div>
+                    <el-image v-if="article.picture !== ''" :src="article.picture" />
                 </div>
-                <el-image v-if="article.picture !== ''" :src="article.picture" />
+                <div class="item_author">
+                    <el-avatar :src="article.user.photo"/>
+                    <el-text class="name">{{ article.user.nickName }}</el-text>
+                    <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
+                    <el-text class="eye">
+                        <el-icon><View /></el-icon>
+                        {{ article.readNum }}
+                    </el-text>
+                    <el-text class="eye" style="margin-right: auto;">
+                        <el-icon><Star /></el-icon>
+                        {{ article.praiseNum }}
+                    </el-text>
+                    <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
+                    <template v-for="(tag, i) in article.tags" :key="tag.id">
+                        <span style="font-size: 12px;">{{ i > 0 ? "、" : "" }}</span>
+                        <el-link href="#" :underline="false">
+                            {{ tag.tagName }}
+                        </el-link>
+                    </template>
+                </div>
+                <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
             </div>
-            <div class="item_author">
-                <el-avatar :src="article.user.photo"/>
-                <el-text class="name">{{ article.user.nickName }}</el-text>
-                <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
-                <el-text class="eye">
-                    <el-icon><View /></el-icon>
-                    {{ article.readNum }}
-                </el-text>
-                <el-text class="eye" style="margin-right: auto;">
-                    <el-icon><Star /></el-icon>
-                    {{ article.praiseNum }}
-                </el-text>
-                <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
-                <template v-for="(tag, i) in article.tags" :key="tag.id">
-                    <span style="font-size: 12px;">{{ i > 0 ? "、" : "" }}</span>
-                    <el-link href="#" :underline="false">
-                        {{ tag.tagName }}
-                    </el-link>
-                </template>
-            </div>
-            <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
+            <el-pagination background layout="prev, pager, next" :total="1000" @current-change="handleCurrentChange" />
         </div>
-        <el-pagination background layout="prev, pager, next" :total="1000" @current-change="handleCurrentChange" />
     </div>
 </template>
 
 <style lang="scss" scoped>
+.al_ext {
+    width: 900px;
+    height: fit-content;
+    margin-right: 20px;
+
     .al_container {
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         height: fit-content;
-        margin-right: 10px;
         padding: 0 20px;
         box-sizing: border-box;
         background-color: #fff;
@@ -151,4 +158,5 @@ const handleCurrentChange = (val: number) => {
             margin: 20px 0;
         }
     }
+}
 </style>

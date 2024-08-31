@@ -31,9 +31,10 @@
         padding: 0 156px;
         margin-top: 20px;
         box-sizing: border-box;
+        justify-content: center;
 
         .resources {
-            width: 300px;
+            width: 280px;
             flex-shrink: 0;
         }
     }
