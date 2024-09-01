@@ -62,6 +62,14 @@ class ArticleApi {
             data: params
         });
     }
+
+    async list(categoryId: number, currentPage: number) {
+        return request({
+            url: "/article/list",
+            method: "GET",
+            params: {categoryId, currentPage}
+        });
+    }
 }
 
 export const userApi = new UserApi();

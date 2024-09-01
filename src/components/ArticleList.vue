@@ -1,49 +1,36 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import header from "@/assets/headers/0007.png";
+import { onMounted, reactive } from "vue";
 
-const articles = reactive([
-    {
-        id: 1, 
-        title: "分布式系统的特征、瓶颈以及性能指标介绍", 
-        picture: "https://cdn.tobebetterjavaer.com/paicoding/8b5865e9461948aed4aacffc62adbae7.jpg", 
-        summary: "分布式的概念存在年头有点久了，在正式进入我们《分布式专栏》之前，感觉有必要来聊一聊，什么是分布式，分布式特点是什么，它又有哪些问题，在了解完这个概念之后，再去看它的架构设计，理论奠基可能帮助会更大", 
-        updateTime: "2022/10/08", 
-        readNum: 5,
-        praiseNum: 2,
-        user: {
-            id: 1, 
-            nickName: "管理员", 
-            photo: header
-        }, 
-        tags: [{id: 1, tagName: "Java"}, {id: 2, tagName: "Spring"}]
-    },
-    {
-        id: 1, 
-        title: "分布式系统的特征、瓶颈以及性能指标介绍", 
-        picture: "", 
-        summary: "分布式的概念存在年头有点久了，在正式进入我们《分布式专栏》之前，感觉有必要来聊一聊，什么是分布式，分布式特点是什么，它又有哪些问题，在了解完这个概念之后，再去看它的架构设计，理论奠基可能帮助会更大", 
-        updateTime: "2022/10/08", 
-        readNum: 5,
-        praiseNum: 2,
-        user: {
-            id: 1, 
-            nickName: "管理员", 
-            photo: header
-        }, 
-        tags: [{id: 1, tagName: "Java"}]
-    },
-]);
+import { fullUrl } from "@/utils/url";
+import { articleApi } from "@/http/api";
 
+const props = defineProps(["category"]);
+const pageInfo = reactive({
+    current: 1,
+    pages: 0,
+    size: 10,
+    total: 0,
+    records: []
+});
+const listArticles = async (categoryId: number, currentPage: number) => {
+    const data = await articleApi.list(categoryId, currentPage);
+    Object.assign(pageInfo, data);
+    console.log(pageInfo);
+    
+}
 const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
 }
+
+onMounted(async () => {
+    listArticles(props.category, 1);
+});
 </script>
 
 <template>
     <div class="al_ext">
         <div class="al_container">
-            <div v-for="article in articles" :key="article.id" class="article_item">
+            <div v-for="article in pageInfo.records" :key="article.id" class="article_item">
                 <div class="item_content">
                     <div class="cl">
                         <el-link href="#" :underline="false">{{ article.title }}</el-link>
@@ -51,23 +38,23 @@ const handleCurrentChange = (val: number) => {
                             {{ article.summary }}
                         </el-text>
                     </div>
-                    <el-image v-if="article.picture !== ''" :src="article.picture" />
+                    <el-image v-if="article.picture" :src="fullUrl(article.picture)" />
                 </div>
                 <div class="item_author">
-                    <el-avatar :src="article.user.photo"/>
-                    <el-text class="name">{{ article.user.nickName }}</el-text>
+                    <el-avatar :src="fullUrl(article.userInfo.photo)"/>
+                    <el-text class="name">{{ article.userInfo.nickName }}</el-text>
                     <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
                     <el-text class="eye">
                         <el-icon><View /></el-icon>
-                        {{ article.readNum }}
+                        {{ article.readNums }}
                     </el-text>
                     <el-text class="eye" style="margin-right: auto;">
                         <el-icon><Star /></el-icon>
-                        {{ article.praiseNum }}
+                        {{ article.collectionNums }}
                     </el-text>
                     <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
                     <template v-for="(tag, i) in article.tags" :key="tag.id">
-                        <span style="font-size: 12px;">{{ i > 0 ? "、" : "" }}</span>
+                        <span style="font-size: 12px;">{{ i > 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "" }}</span>
                         <el-link href="#" :underline="false">
                             {{ tag.tagName }}
                         </el-link>
@@ -75,7 +62,7 @@ const handleCurrentChange = (val: number) => {
                 </div>
                 <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
             </div>
-            <el-pagination background layout="prev, pager, next" :total="1000" @current-change="handleCurrentChange" />
+            <el-pagination background layout="prev, pager, next" :page-size="10" :total="pageInfo.total" @current-change="handleCurrentChange" />
         </div>
     </div>
 </template>
@@ -98,6 +85,8 @@ const handleCurrentChange = (val: number) => {
         background-color: #fff;
 
         .article_item {
+            width: 100%;
+
             .item_content {
                 display: flex;
 
@@ -105,6 +94,7 @@ const handleCurrentChange = (val: number) => {
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
+                    margin-right: auto;
 
                     .el-link {
                         font-weight: 500;
@@ -117,6 +107,7 @@ const handleCurrentChange = (val: number) => {
                     }
                     .el-text {
                         margin-bottom: 18px;
+                        align-self: flex-start;
                     }
                 }
                 .el-image {
@@ -125,6 +116,7 @@ const handleCurrentChange = (val: number) => {
                     flex-shrink: 0;
                     margin-left: 20px;
                     margin-top: 20px;
+                    margin-bottom: 10px;
                 }
             }
 

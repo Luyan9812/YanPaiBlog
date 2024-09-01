@@ -1,18 +1,27 @@
 <script setup lang="ts">
+    import { ref } from "vue";
+
     import Search from "@/components/main/Search.vue";
     import Banner from "@/components/main/Banner.vue";
     import Resources from "@/components/advs/Resources.vue";
     import AdvTemplate from "@/components/advs/AdvTemplate.vue";
     import ArticleList from "@/components/ArticleList.vue";
     
+    const category = ref(0)
+
+
+    const changeCategory = (value: number) => {
+        category.value = value;
+    }
+
 </script>
 
 <template>
     <div class="container">
-        <Search />
+        <Search :changeCategory="changeCategory" />
         <Banner />
         <div class="article_content">
-            <ArticleList />
+            <ArticleList :category="category" />
             <div class="resources">
                 <AdvTemplate type="Resources" />
                 <AdvTemplate type="AdvTemplate" />
