@@ -1,22 +1,31 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
+
 import p1 from "@/assets/achievement_01.png";
 import p2 from "@/assets/achievement_02.png";
 import p3 from "@/assets/achievement_03.png";
 import p4 from "@/assets/achievement_04.png";
+import { userApi } from '@/http/api';
 
-const data = reactive([
-    {id: 1, img: p1, title: "已发布文章", num: 0, suffix: "篇"},
-    {id: 2, img: p2, title: "文章被点赞", num: 0, suffix: "次"},
-    {id: 3, img: p3, title: "文章被阅读", num: 10, suffix: "次"},
-    {id: 4, img: p4, title: "文章被收藏", num: 0, suffix: "篇"},
+const achievement = reactive([
+    {id: 1, img: p1, title: "已发布文章", num: 0, suffix: "篇", alias: "publishNum"},
+    {id: 2, img: p2, title: "文章被点赞", num: 0, suffix: "次", alias: "praiseNum"},
+    {id: 3, img: p3, title: "文章被阅读", num: 10, suffix: "次", alias: "readNum"},
+    {id: 4, img: p4, title: "文章被收藏", num: 0, suffix: "篇", alias: "collectionNum"},
 ]);
+
+onMounted(async () => {
+    const data = await userApi.getAchievement();
+    achievement.map((item) => {
+        item.num = data[item.alias];
+    });
+});
 </script>
 
 <template>
     <div class="achievement">
         <el-text class="title">个人成就</el-text>
-        <div v-for="item in data" :key="item.id" class="item">
+        <div v-for="item in achievement" :key="item.id" class="item">
             <el-image :src="item.img" />
             <el-text style="margin-right: auto;">{{ item.title }}</el-text>
             <el-text style="font-weight: 600;">{{ item.num }}&nbsp;&nbsp;{{ item.suffix }}</el-text>

@@ -22,6 +22,47 @@ class UserApi {
             method: "GET"
         });
     }
+
+    async getAchievement() {
+        return request({
+            url: "/user/achievement",
+            method: "GET"
+        });
+    }
+}
+
+class ArticleApi {
+    async getCategories() {
+        return request({
+            url: "/article/categories",
+            method: "GET"
+        });
+    }
+
+    async getTagsByCategory(categoryId: number) {
+        return request({
+            url: "/article/tags",
+            method: "GET",
+            params: {categoryId}
+        });
+    }
+
+    async deleteFile(path: string) {
+        return request({
+            url: "/article/upload/delete",
+            method: "GET",
+            params: {path}
+        });
+    }
+
+    async save(params: object) {
+        return request({
+            url: "/article/save",
+            method: "POST",
+            data: params
+        });
+    }
 }
 
 export const userApi = new UserApi();
+export const articleApi = new ArticleApi();

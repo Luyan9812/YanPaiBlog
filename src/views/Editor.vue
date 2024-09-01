@@ -1,82 +1,120 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import 'md-editor-v3/lib/style.css';
 import emitter from "@/utils/emitter";
 import { MdEditor } from 'md-editor-v3';
+import { useRouter } from 'vue-router';
+import { FormRules, UploadProps, ElMessage, UploadRawFile, genFileId } from 'element-plus';
+
+import { articleApi } from "@/http/api";
 import Dialog from "@/components/Dialog.vue";
+import { fullUrl } from "@/utils/url";
+import { tokenMgr } from "@/utils/token";
+import { baseURL } from "@/utils/constant";
 
 
-const text = ref('### Hello Editor!');
-const categories = reactive([
-    {id: 1, categoryName: "人工智能"},
-    {id: 2, categoryName: "IOS"},
-    {id: 3, categoryName: "代码人生"},
-    {id: 4, categoryName: "开发工具"},
-    {id: 5, categoryName: "前端"},
-    {id: 6, categoryName: "后端"},
-    {id: 7, categoryName: "阅读"},
-    {id: 8, categoryName: "大数据"},
-    {id: 9, categoryName: "Android"},
-]);
-const tags = reactive([
-    {id: 1, tagName: "Java"},
-    {id: 2, tagName: "KafKa"},
-    {id: 3, tagName: "Json"},
-    {id: 4, tagName: "Vue"},
-    {id: 5, tagName: "MySQL"},
-    {id: 6, tagName: "MongoDB"},
-    {id: 7, tagName: "Hadoop"},
-    {id: 8, tagName: "Spark"},
-    {id: 9, tagName: "Git"},
-]);
-const form = reactive({
-    category: 0,
-    tags: [],
+const article = reactive({
+    title: "测试文章",
     picture: "",
-    summary: ""
+    summary: "",
+    categoryId: 0,
+    tags: [],
+    content: "",
 });
-const textarea = ref('')
-const hideAdd = ref(false)
-const handleRemove = (file: any) => {
-  hideAdd.value = false;
+const upload = ref();
+const formRef = ref();
+const router = useRouter();
+const tags = reactive([]);
+const categories = reactive([]);
+const uploadPath = `${baseURL}/article/upload/covers`;
+const rules = reactive<FormRules>({
+    categoryId: [{required: true, message: '请选择类别', trigger: 'change'}],
+    tags: [{required: true, message: '请选择标签'}],
+    summary: [{required: true, message: '请输入文章摘要'}]
+});
+
+
+const getCategories = async () => {
+    const data = await articleApi.getCategories();
+    categories.length = 0;
+    data.map((item) => {
+        categories.push(item);
+    });
 }
-const onSuccess = (response: any, uploadFile: any) => { //上传成功
-    hideAdd.value = true;
+const getTagsByCategory = async (categoryId: number) => {
+    const data = await articleApi.getTagsByCategory(categoryId);
+    data.map((item) => {
+        tags.push(item);
+    });
+}
+const handleCategoryChange = (categoryId: number) => {
+    tags.length = 0;
+    article.tags.length == 0;
+    getTagsByCategory(categoryId);
+}
+const submitForm = async () => {
+    if (!formRef.value) return;
+    await formRef.value.validate(async (valid) => {
+        if (!valid) return;
+        const data = await articleApi.save(article);
+        if (data) {
+            router.push("/");
+        }
+    });
+}
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+    if (rawFile.size / 1024 / 1024 > 5) {
+        ElMessage.error('文件大小不能超过 5MB！');
+        return false;
+    }
+    return true;
+}
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
+    article.picture = response.data.url;
+}
+const handleExceed: UploadProps['onExceed'] = (files) => {
+    articleApi.deleteFile(article.picture);
+    upload.value!.clearFiles();
+    const file = files[0] as UploadRawFile;
+    file.uid = genFileId();
+    upload.value!.handleStart(file);
+    upload.value!.submit();
+}
+const changeSaveDialogState = (state: boolean) => {
+    emitter.emit("changeDialogState",  {name: "Editor", state: state});
 }
 
-const onError = (error: any) => {
-    console.log(error)
-}
 
-function showSaveDialog() {
-    emitter.emit("changeDialogState",  {name: "Editor", state: true});
-}
+onMounted(async () => {
+    getCategories();
+});
 </script>
 
 <template>
     <div class="editor_container">
         <div class="title">
-            <input type="text" />
-            <el-button type="primary" @click="showSaveDialog">保存</el-button>
+            <input v-model="article.title" type="text" placeholder="输入文章标题" />
+            <el-button type="primary" @click="changeSaveDialogState(true)" :disabled="!article.title">保存</el-button>
         </div>
         <MdEditor 
-            :toolbarsExclude="['github']"
-            v-model="text"/>
+            class="md"
+            :toolbarsExclude="['github', 'mermaid', 'save', 'pageFullscreen', 'fullscreen']"
+            v-model="article.content"/>
         <Dialog name="Editor" title="发布文章" width="628">
-            <el-form :model="form" label-width="auto">
-                <el-form-item label="分类">
-                    <el-radio-group v-model="form.category">
+            <el-form :model="article" label-width="auto" :rules="rules" ref="formRef">
+                <el-form-item label="分类" prop="categoryId">
+                    <el-radio-group v-model="article.categoryId" @change="handleCategoryChange">
                         <el-radio
-                            v-for="category in categories" 
+                            v-for="category in categories"
                             :key="category.id" 
                             :value="category.id" size="small" border>
                             {{ category.categoryName }}
                         </el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="添加标签">
+                <el-form-item label="添加标签" prop="tags">
                     <el-select-v2
-                        v-model="form.tags"
+                        v-model="article.tags"
                         filterable
                         :options="tags"
                         placeholder="请选择你需要的标签，最多三个"
@@ -86,32 +124,25 @@ function showSaveDialog() {
                         :props="{label: 'tagName', value: 'id'}"
                     />
                 </el-form-item>
-                <el-form-item label="文章封面">
-                    <el-upload 
-                    action="#" 
-                    list-type="picture-card" 
-                    :auto-upload="false"
-                    :on-error="onError"
-                    :on-success="onSuccess"
-                    :class="{'hideAdd': hideAdd}">
-                        <el-icon><Plus /></el-icon>
-                        <template #file="{ file }">
-                        <div>
-                            <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                            <span class="el-upload-list__item-actions">
-                                <span
-                                    class="el-upload-list__item-delete"
-                                    @click="handleRemove(file)">
-                                    <el-icon><Delete /></el-icon>
-                                </span>
-                            </span>
-                        </div>
-                        </template>
+                <el-form-item label="文章封面" prop="picture">
+                    <el-upload
+                        ref="upload"
+                        class="avatar-uploader"
+                        :action="uploadPath"
+                        :headers="{token: tokenMgr.getToken()}"
+                        :show-file-list="false"
+                        accept="image/*"
+                        :limit="1"
+                        :on-exceed="handleExceed"
+                        :on-success="handleAvatarSuccess"
+                        :before-upload="beforeAvatarUpload">
+                        <img v-if="article.picture" :src="fullUrl(article.picture)" class="avatar" />
+                        <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="文章摘要">
+                <el-form-item label="文章摘要" prop="summary">
                     <el-input
-                        v-model="textarea"
+                        v-model="article.summary"
                         maxlength="256"
                         rows="5"
                         style="width: 430px;"
@@ -122,7 +153,7 @@ function showSaveDialog() {
             </el-form>
             <el-divider style="margin: 0 0 15px 0;" />
             <div id="publish_wrapper">
-                <el-button type="primary">发布</el-button>
+                <el-button type="primary" @click="submitForm()">发布</el-button>
             </div>
         </Dialog>
     </div>
@@ -133,18 +164,22 @@ function showSaveDialog() {
     .title {
         display: flex;
         align-items: center;
-        padding: 0 10px;
+        padding: 0 10px 0 20px;
         box-sizing: border-box;
 
         input {
             width: 500px;
             height: 40px;
-            font-size: 25px;
+            font-size: 20px;
             font-weight: 500;
             outline: none;
             border: none;
             margin-right: auto;
         }
+    }
+
+    .md {
+        height: calc(100vh - 150px);
     }
     
     .el-form {
@@ -153,13 +188,33 @@ function showSaveDialog() {
             height: 32px;
             margin: 0 10px 8px 0;
         }
-    }
+        .avatar-uploader .avatar {
+            width: 230px;
+            height: 150px;
+            display: block;
+        }
+        .avatar-uploader {
+            border: 1px dashed #dcdfe6;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: .2s;
+        }
 
-    .hideAdd {
-        ::v-deep .el-upload--picture-card{
-            display: none;
+        .avatar-uploader:hover {
+            border-color: #409eff;
+        }
+
+        .el-icon.avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 230px;
+            height: 150px;
+            text-align: center;
         }
     }
+
     #publish_wrapper {
         display: flex;
         justify-content: flex-end;

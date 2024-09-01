@@ -38,6 +38,13 @@
         Object.assign(indexUserInfo, data);
         indexUserInfo.photo = fullUrl(indexUserInfo.photo);
     }
+    const edit = () => {
+        if (tokenMgr.hasToken()) {
+            navigateTo('/editor');
+        } else {
+            changeLoginState(true);
+        }
+    }
 
     onMounted(async () => {
         if (tokenMgr.hasToken()) {
@@ -51,7 +58,7 @@
     <div class="hd_ext">
         <div class="hd_container">
             <img src="@/assets/logo.svg" style="margin-right: auto;" @click="navigateTo('/index')" />
-            <el-button color="#ff6900" class="publish_btn" @click="navigateTo('/editor')">写文章</el-button>
+            <el-button color="#ff6900" class="publish_btn" @click="edit">写文章</el-button>
             <el-link v-if="!isLogin" :underline="false" class="login_btn" @click="changeLoginState(true)">登录</el-link>
             <template v-else>
                 <el-badge :is-dot="indexUserInfo.msgCount > 0" class="bell">
