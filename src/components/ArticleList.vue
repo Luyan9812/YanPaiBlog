@@ -83,6 +83,7 @@ const handleCurrentChange = (val: number) => {
 <style lang="scss" scoped>
 .al_ext {
     width: 900px;
+    // flex-shrink: 0;
     height: fit-content;
     margin-right: 20px;
 

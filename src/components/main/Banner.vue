@@ -33,6 +33,7 @@ const recommends = reactive([
 <style lang="scss" scoped>
 .rmd_ext {
     width: 100%;
+    min-width: 1200px;
     height: fit-content;
     background-color: #e1af6c;
 

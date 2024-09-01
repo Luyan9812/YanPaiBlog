@@ -78,7 +78,9 @@
 <style lang="scss" scoped>
 .hd_ext {
     width: 100%;
+    min-width: 1200px;
     height: fit-content;
+    cursor: pointer;
     background-color: rgba(36, 41, 47, 1);
 
     .hd_container {

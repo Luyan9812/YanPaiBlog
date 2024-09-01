@@ -28,7 +28,7 @@
 
     .article_content {
         display: flex;
-        padding: 0 156px;
+        padding: 0;
         margin-top: 20px;
         box-sizing: border-box;
         justify-content: center;
