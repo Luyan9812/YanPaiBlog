@@ -1,18 +1,42 @@
 <script setup lang="ts">
-    import { ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 
-    import Search from "@/components/main/Search.vue";
-    import Banner from "@/components/main/Banner.vue";
-    import Resources from "@/components/advs/Resources.vue";
-    import AdvTemplate from "@/components/advs/AdvTemplate.vue";
-    import ArticleList from "@/components/ArticleList.vue";
-    
-    const category = ref(0)
+import { fullUrl } from "@/utils/url";
+import { articleApi } from "@/http/api";
+
+import Search from "@/components/main/Search.vue";
+import Banner from "@/components/main/Banner.vue";
+import Resources from "@/components/advs/Resources.vue";
+import AdvTemplate from "@/components/advs/AdvTemplate.vue";
+import ArticleList from "@/components/ArticleList.vue";
 
 
-    const changeCategory = (value: number) => {
-        category.value = value;
-    }
+const categoryId = ref(0);
+const currentPage = ref(1);
+const pageInfo = reactive({
+    current: 1,
+    pages: 0,
+    total: 0,
+    records: []
+});
+
+
+const changeCategory = (value: number) => {
+    categoryId.value = value;
+    listArticles(categoryId.value, currentPage.value);
+}
+const changePage = (value: number) => {
+    currentPage.value = value;
+    listArticles(categoryId.value, currentPage.value);
+}
+const listArticles = async (categoryId: number, currentPage: number) => {
+    const data = await articleApi.list(categoryId, currentPage);
+    Object.assign(pageInfo, data);
+}
+
+onMounted(async () => {
+    listArticles(categoryId.value, currentPage.value);
+});
 
 </script>
 
@@ -21,7 +45,7 @@
         <Search :changeCategory="changeCategory" />
         <Banner />
         <div class="article_content">
-            <ArticleList :category="category" />
+            <ArticleList :pageInfo="pageInfo" :changePage="changePage" />
             <div class="resources">
                 <AdvTemplate type="Resources" />
                 <AdvTemplate type="AdvTemplate" />

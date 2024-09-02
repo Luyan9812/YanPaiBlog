@@ -1,35 +1,59 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import header from "@/assets/headers/0007.png";
+import { reactive, ref, watch } from "vue";
 
+import { userApi } from "@/http/api";
+import { fullUrl } from "@/utils/url";
+
+const btnDisabled = ref(false);
+const props = defineProps(["authorId"]);
 const authorInfo = reactive({
-    nickName: "管理员",
-    photo: header,
-    jointDays: 12,
+    userId: 0,
+    nickName: "",
+    photo: "",
+    jointDays: 0,
     hasFollowed: false,  // 当前用户是否关注了这个作者
-    articleNum: 8,
-    praiseNum: 1,
-    heartNum: 1,
-    fansNum: 1
+    publishNum: 0,
+    praisedNum: 0,
+    collectionNum: 0,
+    fansNum: 0
 });
 const numbers = reactive([
-    {name: "文章数", num: authorInfo.articleNum},
-    {name: "点赞数", num: authorInfo.praiseNum},
-    {name: "收藏数", num: authorInfo.heartNum},
-    {name: "粉丝数", num: authorInfo.fansNum},
+    {name: "文章数", alias: "publishNum", num: 0},
+    {name: "点赞数", alias: "praisedNum", num: 0},
+    {name: "收藏数", alias: "collectionNum", num: 0},
+    {name: "粉丝数", alias: "fansNum", num: 0},
 ]);
+const getAuthorInfo = async (authorId: number) => {
+    const data = await userApi.getAuthorInfo(authorId);
+    Object.assign(authorInfo, data);
+    numbers.forEach((item) => {
+        item.num = authorInfo[item.alias];
+    });
+}
+const changeFollowState = async () => {
+    btnDisabled.value = true;
+    const authorId = authorInfo.userId;
+    const followState = !authorInfo.hasFollowed;
+    await userApi.changeFollowState(authorId, followState);
+    btnDisabled.value = false;
+}
+
+watch(() => props.authorId, async (val) => {
+    if (val <= 0) return;
+    getAuthorInfo(val);
+});
 </script>
 
 <template>
     <div class="author_container">
         <el-text>作者介绍</el-text>
-        <el-avatar :src="authorInfo.photo"/>
+        <el-avatar :src="fullUrl(authorInfo.photo)"/>
         <el-text class="name">{{ authorInfo.nickName }}</el-text>
         <el-text class="joint_days">
             已加入 {{ authorInfo.jointDays }} 天
             <img src="@/assets/v.svg"/>
         </el-text>
-        <el-button @click="authorInfo.hasFollowed = !authorInfo.hasFollowed" type="primary">
+        <el-button :disabled="btnDisabled" @click="changeFollowState()" type="primary">
             {{ authorInfo.hasFollowed ? "取消关注" : "关注" }}
         </el-button>
         <el-divider />

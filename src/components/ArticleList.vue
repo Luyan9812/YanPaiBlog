@@ -2,29 +2,9 @@
 import { onMounted, reactive } from "vue";
 
 import { fullUrl } from "@/utils/url";
-import { articleApi } from "@/http/api";
 
-const props = defineProps(["category"]);
-const pageInfo = reactive({
-    current: 1,
-    pages: 0,
-    size: 10,
-    total: 0,
-    records: []
-});
-const listArticles = async (categoryId: number, currentPage: number) => {
-    const data = await articleApi.list(categoryId, currentPage);
-    Object.assign(pageInfo, data);
-    console.log(pageInfo);
-    
-}
-const handleCurrentChange = (val: number) => {
-    console.log(`current page: ${val}`)
-}
 
-onMounted(async () => {
-    listArticles(props.category, 1);
-});
+defineProps(["pageInfo", "changePage"]);
 </script>
 
 <template>
@@ -33,7 +13,7 @@ onMounted(async () => {
             <div v-for="article in pageInfo.records" :key="article.id" class="article_item">
                 <div class="item_content">
                     <div class="cl">
-                        <el-link href="#" :underline="false">{{ article.title }}</el-link>
+                        <el-link :href="'/article?id=' + article.id" :underline="false">{{ article.title }}</el-link>
                         <el-text line-clamp="2">
                             {{ article.summary }}
                         </el-text>
@@ -41,16 +21,16 @@ onMounted(async () => {
                     <el-image v-if="article.picture" :src="fullUrl(article.picture)" />
                 </div>
                 <div class="item_author">
-                    <el-avatar :src="fullUrl(article.userInfo.photo)"/>
-                    <el-text class="name">{{ article.userInfo.nickName }}</el-text>
+                    <el-avatar :src="fullUrl(article.authorInfo.photo)"/>
+                    <el-text class="name">{{ article.authorInfo.nickName }}</el-text>
                     <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
                     <el-text class="eye">
                         <el-icon><View /></el-icon>
-                        {{ article.readNums }}
+                        {{ article.readNum }}
                     </el-text>
                     <el-text class="eye" style="margin-right: auto;">
                         <el-icon><Star /></el-icon>
-                        {{ article.collectionNums }}
+                        {{ article.collectionNum }}
                     </el-text>
                     <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
                     <template v-for="(tag, i) in article.tags" :key="tag.id">
@@ -62,7 +42,7 @@ onMounted(async () => {
                 </div>
                 <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
             </div>
-            <el-pagination background layout="prev, pager, next" :page-size="10" :total="pageInfo.total" @current-change="handleCurrentChange" />
+            <el-pagination background layout="prev, pager, next" :page-size="10" :total="pageInfo.total" @current-change="changePage" />
         </div>
     </div>
 </template>

@@ -13,8 +13,8 @@ const userInfo = reactive({
     company: "",
     profile: "",
     jointDays: "",
-    fansNums: "",
-    followedNums: "",
+    fansNum: "",
+    followedNum: "",
     doneDegree: 0,
     createTime: "",
     updateTime: ""
@@ -73,12 +73,12 @@ onMounted(async () => {
                 <el-divider direction="vertical" />
                 <div class="follow_item">
                     <el-text>关注数</el-text>
-                    <el-text class="num">{{ userInfo.followedNums }}</el-text>
+                    <el-text class="num">{{ userInfo.followedNum }}</el-text>
                 </div>
                 <el-divider direction="vertical" />
                 <div class="follow_item">
                     <el-text>粉丝数</el-text>
-                    <el-text class="num">{{ userInfo.fansNums }}</el-text>
+                    <el-text class="num">{{ userInfo.fansNum }}</el-text>
                 </div>
             </div>
         </div>

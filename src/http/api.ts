@@ -29,6 +29,22 @@ class UserApi {
             method: "GET"
         });
     }
+
+    async getAuthorInfo(authorId: number) {
+        return request({
+            url: `/user/author`,
+            method: "GET",
+            params: {authorId}
+        });
+    }
+
+    async changeFollowState(authorId: number, followState: boolean) {
+        return request({
+            url: `/user/changeFollowState`,
+            method: "GET",
+            params: {authorId, followState}
+        });
+    }
 }
 
 class ArticleApi {
@@ -68,6 +84,38 @@ class ArticleApi {
             url: "/article/list",
             method: "GET",
             params: {categoryId, currentPage}
+        });
+    }
+
+    async getPublishedArticles(currentPage: number) {
+        return request({
+            url: "/article/published",
+            method: "GET",
+            params: {currentPage}
+        });
+    }
+
+    async getReadArticles(currentPage: number) {
+        return request({
+            url: "/article/foot",
+            method: "GET",
+            params: {currentPage}
+        });
+    }
+
+    async getCollectionArticles(currentPage: number) {
+        return request({
+            url: "/article/collection",
+            method: "GET",
+            params: {currentPage}
+        });
+    }
+
+
+    async getArticleDetails(articleId: number) {
+        return request({
+            url: `/article/details/${articleId}`,
+            method: "GET"
         });
     }
 }

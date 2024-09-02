@@ -49,6 +49,8 @@ function changeFollowState(id: number) {
 
 <style scoped lang="scss">
 .follow_container {
+    width: 900px;
+
     .header {
         display: flex;
         padding: 0 20px;

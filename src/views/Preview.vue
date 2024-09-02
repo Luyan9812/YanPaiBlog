@@ -1,24 +1,38 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
-import header from "@/assets/headers/0005.png";
+import { onMounted, reactive, ref } from "vue";
+import { useRoute } from 'vue-router';
+
+import { articleApi } from "@/http/api";
+import { fullUrl } from "@/utils/url";
+
 import Author from "@/components/Author.vue";
-import ArticleList from "@/components/ArticleList.vue";
-import Resources from "@/components/advs/Resources.vue";
 import AdvTemplate from "@/components/advs/AdvTemplate.vue";
 
 import 'md-editor-v3/lib/preview.css';
 import { MdPreview } from 'md-editor-v3';
 
+const route = useRoute();
 const article = reactive({
-    id: 1,
-    title: "技术派全方位视角解读",
-    content: "### 技术派\n技术派有以下优点：\n- 好看；\n- 好玩；",
-    author: {
-        id: 1,
-        nickName: "管理员",
-        photo: header,
-        updateTime: "2024/07/24"
+    id: 0,
+    title: "",
+    content: "",
+    updateTime: "",
+    authorInfo: {
+        id: 0,
+        nickName: "",
+        photo: ""
     }
+});
+
+
+const getArticleDetails = async () => {
+    const articleId = route.query.id;
+    const data = await articleApi.getArticleDetails(articleId);
+    Object.assign(article, data);
+}
+
+onMounted(async () => {
+    getArticleDetails();
 });
 </script>
 
@@ -36,15 +50,15 @@ const article = reactive({
             <div class="content">
                 <el-text class="name">{{ article.title }}</el-text>
                 <div class="author_info">
-                    <el-avatar :src="article.author.photo" />
-                    <el-text style="color: #62749f;">{{ article.author.nickName }}</el-text>
-                    <el-text>{{ article.author.updateTime }}</el-text>
+                    <el-avatar :src="fullUrl(article.authorInfo.photo)" />
+                    <el-text style="color: #62749f;">{{ article.authorInfo.nickName }}</el-text>
+                    <el-text>{{ article.updateTime }}</el-text>
                 </div>
                 <el-divider />
                 <MdPreview style="padding: 0;" :modelValue="article.content" />
             </div>
             <div class="author">
-                <Author />
+                <Author :authorId="article.authorInfo.id" />
                 <AdvTemplate type="Resources" />
                 <AdvTemplate type="AdvTemplate" />
             </div>

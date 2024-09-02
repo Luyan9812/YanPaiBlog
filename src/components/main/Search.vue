@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 
+const props = defineProps(["changeCategory"]);
+
 const types = reactive([
-    {id: 1, categoryName: "全部", active: true},
-    {id: 2, categoryName: "后端", active: false},
-    {id: 3, categoryName: "前端", active: false},
-    {id: 4, categoryName: "安卓", active: false}
+    {id: 0, categoryName: "全部", active: true},
+    {id: 1, categoryName: "后端", active: false},
+    {id: 2, categoryName: "前端", active: false},
+    {id: 3, categoryName: "安卓", active: false}
 ]);
 
 function handleSwitchType(id: number) {
     types.map((type) => {
         type.active = type.id == id;
-    })
+    });
+    props.changeCategory(id);
 }
 </script>
 
