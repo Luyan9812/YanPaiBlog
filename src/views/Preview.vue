@@ -70,6 +70,7 @@ onMounted(async () => {
 .preview_ext {
     width: 100%;
     height: fit-content;
+    min-height: calc(100vh - 110px);
     background-color: #f7f8fa;
 
     .preview_container {

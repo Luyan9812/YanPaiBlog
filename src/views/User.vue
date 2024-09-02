@@ -17,7 +17,7 @@ import Achievement from "@/components/user/Achievement.vue";
 <style lang="scss" scoped>
 .user {
     width: 100%;
-    min-height: 800px;
+    min-height: calc(100vh - 110px);
     background-color: #f7f8f9;
 
     .content {
