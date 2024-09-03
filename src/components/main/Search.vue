@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
+
+import { articleApi } from "@/http/api";
 
 const props = defineProps(["changeCategory"]);
 
-const types = reactive([
-    {id: 0, categoryName: "全部", active: true},
-    {id: 1, categoryName: "后端", active: false},
-    {id: 2, categoryName: "前端", active: false},
-    {id: 3, categoryName: "安卓", active: false}
-]);
+const types = reactive([]);
 
-function handleSwitchType(id: number) {
+const handleSwitchType = async (id: number) => {
     types.map((type) => {
         type.active = type.id == id;
     });
     props.changeCategory(id);
 }
+
+onMounted(async () => {
+    const data = await articleApi.getCategoriesHavingArticles();
+    types.length = 0;
+    types.push({id: 0, categoryName: "全部", active: true});
+    data.forEach(element => {
+        element.active = false;
+        types.push(element);
+    });
+});
 </script>
 
 <template>

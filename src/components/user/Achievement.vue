@@ -10,8 +10,8 @@ import { userApi } from '@/http/api';
 const achievement = reactive([
     {id: 1, img: p1, title: "已发布文章", num: 0, suffix: "篇", alias: "publishNum"},
     {id: 2, img: p2, title: "文章被点赞", num: 0, suffix: "次", alias: "praiseNum"},
-    {id: 3, img: p3, title: "文章被阅读", num: 10, suffix: "次", alias: "readNum"},
-    {id: 4, img: p4, title: "文章被收藏", num: 0, suffix: "篇", alias: "collectionNum"},
+    {id: 3, img: p3, title: "文章被阅读", num: 10, suffix: "人", alias: "readNum"},
+    {id: 4, img: p4, title: "文章被收藏", num: 0, suffix: "人", alias: "collectionNum"},
 ]);
 
 onMounted(async () => {

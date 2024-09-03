@@ -13,7 +13,7 @@ defineProps(["pageInfo", "changePage"]);
             <div v-for="article in pageInfo.records" :key="article.id" class="article_item">
                 <div class="item_content">
                     <div class="cl">
-                        <el-link :href="'/article?id=' + article.id" :underline="false">{{ article.title }}</el-link>
+                        <el-link :href="'/article/' + article.id" :underline="false">{{ article.title }}</el-link>
                         <el-text line-clamp="2">
                             {{ article.summary }}
                         </el-text>

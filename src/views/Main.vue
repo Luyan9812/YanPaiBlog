@@ -48,7 +48,7 @@ onMounted(async () => {
             <ArticleList :pageInfo="pageInfo" :changePage="changePage" />
             <div class="resources">
                 <AdvTemplate type="Resources" />
-                <AdvTemplate type="AdvTemplate" />
+                <AdvTemplate type="HotArticle" />
             </div>
         </div>
     </div>

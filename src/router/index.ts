@@ -23,7 +23,7 @@ const router = createRouter({
       component: () => import("../views/Editor.vue")
     },
     {
-      path: '/article',
+      path: '/article/:articleId',
       name: 'article',
       component: () => import("../views/Preview.vue")
     },

@@ -1,30 +1,51 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import header from "@/assets/headers/0005.png";
+import { onMounted, reactive, ref } from "vue";
 
+import { userApi } from "@/http/api";
+import { fullUrl } from "@/utils/url";
+
+
+const relations = reactive([]);
+
+const changeFollowState = async (id: number) => {
+    relations.forEach(async user => {
+        if (user.id !== id) return;
+        await userApi.changeFollowState(id, !user.hasFollowed);
+        user.hasFollowed = !user.hasFollowed;
+    })
+}
+const getFansOrFollow = async () => {
+    let data;
+    switch(selectedTab.value) {
+        case 1: data = await userApi.getFollowList(); break
+        case 2: data = await userApi.getFansList(); break;
+    }
+    if (data) {
+        console.log(data);
+        
+        relations.length = 0;
+        data.forEach(element => {
+            relations.push(element);
+        });
+    }
+}
+
+const selectedTab = ref(1);
 const tabs = reactive([
     {id: 1, title: "关注列表", active: true},
     {id: 2, title: "粉丝列表", active: false},
 ]);
-
-const follows = reactive([
-    {id: 1, photo: header, nickName: "张三", followed: true},
-    {id: 2, photo: header, nickName: "李四", followed: false},
-    {id: 3, photo: header, nickName: "王五", followed: true},
-]);
-
-function selectTab(id: number) {
+const selectTab = (id: number) => {
     tabs.map(tab => {
         tab.active = (id === tab.id);
     });
+    selectedTab.value = id;
+    getFansOrFollow();
 }
 
-function changeFollowState(id: number) {
-    follows.map(follow => {
-        if (follow.id !== id) return;
-        follow.followed = !follow.followed;
-    })
-}
+onMounted(async () => {
+    getFansOrFollow();
+});
 </script>
 
 <template>
@@ -37,11 +58,11 @@ function changeFollowState(id: number) {
                 </p>
             </template>
         </div>
-        <div v-for="follow in follows" :key="follow.id" class="follow_item">
-            <el-avatar :src="follow.photo" />
-            <el-text>{{ follow.nickName }}</el-text>
-            <el-button size="small" round @click="changeFollowState(follow.id)">
-                {{ follow.followed ? "取消关注" : "关 注" }}
+        <div v-for="user in relations" :key="user.userId" class="follow_item">
+            <el-avatar :src="fullUrl(user.photo)" />
+            <el-text>{{ user.nickName }}</el-text>
+            <el-button size="small" round @click="changeFollowState(user.userId)">
+                {{ user.hasFollowed ? "取消关注" : "关 注" }}
             </el-button>
         </div>
     </div>    

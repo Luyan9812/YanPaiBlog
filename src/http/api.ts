@@ -45,19 +45,40 @@ class UserApi {
             params: {authorId, followState}
         });
     }
+
+    async getFansList() {
+        return request({
+            url: "/user/fansList",
+            method: "GET"
+        });
+    }
+
+    async getFollowList() {
+        return request({
+            url: "/user/followList",
+            method: "GET"
+        });
+    }
 }
 
 class ArticleApi {
     async getCategories() {
         return request({
-            url: "/article/categories",
+            url: "/category/all",
+            method: "GET"
+        });
+    }
+
+    async getCategoriesHavingArticles() {
+        return request({
+            url: "/category/haveArticles",
             method: "GET"
         });
     }
 
     async getTagsByCategory(categoryId: number) {
         return request({
-            url: "/article/tags",
+            url: "/tag/getTagsByCategory",
             method: "GET",
             params: {categoryId}
         });
@@ -111,11 +132,26 @@ class ArticleApi {
         });
     }
 
-
     async getArticleDetails(articleId: number) {
         return request({
             url: `/article/details/${articleId}`,
             method: "GET"
+        });
+    }
+
+    async changePraiseState(articleId: number, praiseState: boolean) {
+        return request({
+            url: "/article/changePraiseState",
+            method: "GET",
+            params: {articleId, praiseState}
+        });
+    }
+
+    async changeCollectionState(articleId: number, collectionState: boolean) {
+        return request({
+            url: "/article/changeCollectionState",
+            method: "GET",
+            params: {articleId, collectionState}
         });
     }
 }

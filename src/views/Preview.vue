@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
 import { useRoute } from 'vue-router';
+import 'md-editor-v3/lib/preview.css';
+import { MdPreview } from 'md-editor-v3';
+import { onMounted, reactive, ref } from "vue";
 
 import { articleApi } from "@/http/api";
 import { fullUrl } from "@/utils/url";
 
+import praisedIcon from "@/assets/praise.png";
+import noPraisedIcon from "@/assets/praise_dark.png";
+import heartIcon from "@/assets/heart.png";
+import noHeartIcon from "@/assets/heart_dark.png";
 import Author from "@/components/Author.vue";
 import AdvTemplate from "@/components/advs/AdvTemplate.vue";
 
-import 'md-editor-v3/lib/preview.css';
-import { MdPreview } from 'md-editor-v3';
 
 const route = useRoute();
 const article = reactive({
@@ -21,14 +25,28 @@ const article = reactive({
         id: 0,
         nickName: "",
         photo: ""
-    }
+    },
+    hasPraised: false,
+    hasCollection: false
 });
+const icon = {praise: [praisedIcon, noPraisedIcon], heart: [heartIcon, noHeartIcon]};
 
 
 const getArticleDetails = async () => {
-    const articleId = route.query.id;
+    const articleId = route.params.articleId;
     const data = await articleApi.getArticleDetails(articleId);
+    console.log(data);
+    
     Object.assign(article, data);
+}
+const changeUserState = async (type: string) => {
+    if (type === 'praise') {
+        await articleApi.changePraiseState(article.id, !article.hasPraised);
+        article.hasPraised = !article.hasPraised;
+    } else if (type === 'collection') {
+        await articleApi.changeCollectionState(article.id, !article.hasCollection);
+        article.hasCollection = !article.hasCollection;
+    }
 }
 
 onMounted(async () => {
@@ -40,11 +58,11 @@ onMounted(async () => {
     <div class="preview_ext">
         <div class="preview_container">
             <div class="praise">
-                <div class="img">
-                    <img src="@/assets/praise_dark.png" />
+                <div class="img" @click="changeUserState('praise')">
+                    <img :src="icon.praise[article.hasPraised ? 0 : 1]" />
                 </div>
-                <div class="img">
-                    <img src="@/assets/heart_dark.png" />
+                <div class="img" @click="changeUserState('collection')">
+                    <img :src="icon.heart[article.hasCollection ? 0 : 1]" />
                 </div>
             </div>
             <div class="content">
@@ -60,7 +78,7 @@ onMounted(async () => {
             <div class="author">
                 <Author :authorId="article.authorInfo.id" />
                 <AdvTemplate type="Resources" />
-                <AdvTemplate type="AdvTemplate" />
+                <AdvTemplate type="HotArticle" />
             </div>
         </div>
     </div>
