@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
+import { Search } from '@element-plus/icons-vue';
 
 import { articleApi } from "@/http/api";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const props = defineProps(["changeCategory"]);
 
+const title = ref("");
 const types = reactive([]);
-
 const handleSwitchType = async (id: number) => {
     types.map((type) => {
         type.active = type.id == id;
     });
     props.changeCategory(id);
+}
+const searchChange = () => {
+    if (title.value.trim()) {
+        router.push(`/results?title=${title.value.trim()}`)
+    }
 }
 
 onMounted(async () => {
@@ -34,7 +42,12 @@ onMounted(async () => {
                     {{ type.categoryName }}
                 </div>
             </template>
-            <el-icon size="20" style="margin-left: auto;"><Search  /></el-icon>
+            <el-input
+                v-model="title"
+                style="width: 240px; margin-left: auto;"
+                placeholder="键入搜索"
+                @change="searchChange()"
+                :suffix-icon="Search"/>
         </div>
     </div>
 </template>

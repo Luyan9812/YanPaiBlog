@@ -35,7 +35,7 @@ defineProps(["pageInfo", "changePage"]);
                     <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
                     <template v-for="(tag, i) in article.tags" :key="tag.id">
                         <span style="font-size: 12px;">{{ i > 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "" }}</span>
-                        <el-link href="#" :underline="false">
+                        <el-link :href="`/results?tag=${tag.id}`" :underline="false">
                             {{ tag.tagName }}
                         </el-link>
                     </template>

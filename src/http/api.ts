@@ -177,6 +177,22 @@ class ArticleApi {
             method: "GET"
         });
     }
+
+    async getArticlesByTag(tagId: number, currentPage: number) {
+        return request({
+            url: "/article/byTag",
+            method: "GET",
+            params: {tagId, currentPage}
+        });
+    }
+
+    async search(title: string, currentPage: number) {
+        return request({
+            url: "/article/search",
+            method: "POST",
+            params: {title, currentPage}
+        });
+    }
 }
 
 export const userApi = new UserApi();
