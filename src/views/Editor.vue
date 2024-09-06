@@ -83,6 +83,20 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
 const changeSaveDialogState = (state: boolean) => {
     emitter.emit("changeDialogState",  {name: "Editor", state: state});
 }
+const onUploadImg = async (files: FileList, callback: (urls: string[]) => void) => {
+    const res = await Promise.all(
+        Array.from(files).map((file) => {
+            return new Promise((rev, rej) => {
+                const form = new FormData();
+                form.append('file', file);
+                articleApi.uploadFile("covers", form).then((res) => {
+                    rev(res);
+                });
+            });
+        })
+    );
+    callback(res.map((item: any) => fullUrl(item.url)));
+}
 
 
 onMounted(async () => {
@@ -99,6 +113,7 @@ onMounted(async () => {
         <MdEditor 
             class="md"
             :toolbarsExclude="['github', 'mermaid', 'save', 'pageFullscreen', 'fullscreen']"
+            @on-upload-img="onUploadImg"
             v-model="article.content"/>
         <Dialog name="Editor" title="发布文章" width="628">
             <el-form :model="article" label-width="auto" :rules="rules" ref="formRef">

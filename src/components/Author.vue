@@ -5,7 +5,7 @@ import { userApi } from "@/http/api";
 import { fullUrl } from "@/utils/url";
 
 const btnDisabled = ref(false);
-const props = defineProps(["authorId"]);
+const props = defineProps(["authorId", "setMySelf"]);
 const authorInfo = reactive({
     userId: 0,
     nickName: "",
@@ -15,7 +15,8 @@ const authorInfo = reactive({
     publishNum: 0,
     praisedNum: 0,
     collectionNum: 0,
-    fansNum: 0
+    fansNum: 0,
+    myself: false
 });
 const numbers = reactive([
     {name: "文章数", alias: "publishNum", num: 0},
@@ -29,6 +30,7 @@ const getAuthorInfo = async (authorId: number) => {
     numbers.forEach((item) => {
         item.num = authorInfo[item.alias];
     });
+    props.setMySelf(authorInfo.myself);
 }
 const changeFollowState = async () => {
     btnDisabled.value = true;
@@ -53,7 +55,7 @@ watch(() => props.authorId, async (val) => {
             已加入 {{ authorInfo.jointDays }} 天
             <img src="@/assets/v.svg"/>
         </el-text>
-        <el-button :disabled="btnDisabled" @click="changeFollowState()" type="primary">
+        <el-button v-if="!authorInfo.myself" :disabled="btnDisabled" @click="changeFollowState()" type="primary">
             {{ authorInfo.hasFollowed ? "取消关注" : "关注" }}
         </el-button>
         <el-divider />

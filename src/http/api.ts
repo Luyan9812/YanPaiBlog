@@ -84,6 +84,15 @@ class ArticleApi {
         });
     }
 
+    async uploadFile(type: string, data: FormData) {
+        return request({
+            url: `/article/upload/${type}`,
+            method: "POST",
+            data: data,
+            headers: {"Content-Type": "multipart/form-data"}
+        });
+    }
+
     async deleteFile(path: string) {
         return request({
             url: "/article/upload/delete",
@@ -152,6 +161,20 @@ class ArticleApi {
             url: "/article/changeCollectionState",
             method: "GET",
             params: {articleId, collectionState}
+        });
+    }
+
+    async deleteArticle(articleId: number) {
+        return request({
+            url: `/article/${articleId}`,
+            method: "DELETE"
+        });
+    }
+
+    async getHotList() {
+        return request({
+            url: "/article/hot",
+            method: "GET"
         });
     }
 }

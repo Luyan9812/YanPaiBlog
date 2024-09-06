@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import 'md-editor-v3/lib/preview.css';
 import { MdPreview } from 'md-editor-v3';
 import { onMounted, reactive, ref } from "vue";
-
-import { articleApi } from "@/http/api";
-import { fullUrl } from "@/utils/url";
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 import praisedIcon from "@/assets/praise.png";
 import noPraisedIcon from "@/assets/praise_dark.png";
 import heartIcon from "@/assets/heart.png";
 import noHeartIcon from "@/assets/heart_dark.png";
+
+import { fullUrl } from "@/utils/url";
+import { articleApi } from "@/http/api";
+
 import Author from "@/components/Author.vue";
 import AdvTemplate from "@/components/advs/AdvTemplate.vue";
 
 
+const myself = ref(false);
 const route = useRoute();
+const router = useRouter();
 const article = reactive({
     id: 0,
     title: "",
@@ -27,7 +31,7 @@ const article = reactive({
         photo: ""
     },
     hasPraised: false,
-    hasCollection: false
+    hasCollection: false,
 });
 const icon = {praise: [praisedIcon, noPraisedIcon], heart: [heartIcon, noHeartIcon]};
 
@@ -35,8 +39,6 @@ const icon = {praise: [praisedIcon, noPraisedIcon], heart: [heartIcon, noHeartIc
 const getArticleDetails = async () => {
     const articleId = route.params.articleId;
     const data = await articleApi.getArticleDetails(articleId);
-    console.log(data);
-    
     Object.assign(article, data);
 }
 const changeUserState = async (type: string) => {
@@ -47,6 +49,27 @@ const changeUserState = async (type: string) => {
         await articleApi.changeCollectionState(article.id, !article.hasCollection);
         article.hasCollection = !article.hasCollection;
     }
+}
+const setMySelf = (v: boolean) => {
+    myself.value = v;
+}
+const deleteConfirm = () => {
+    ElMessageBox.confirm(
+        `确认删除《${article.title}》？`,
+        '删除提醒',
+        {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error',
+        }
+    ).then(async () => {
+        await articleApi.deleteArticle(article.id);
+        ElMessage({
+            type: 'success',
+            message: '删除成功',
+        });
+        router.push("/");
+    })
 }
 
 onMounted(async () => {
@@ -70,13 +93,25 @@ onMounted(async () => {
                 <div class="author_info">
                     <el-avatar :src="fullUrl(article.authorInfo.photo)" />
                     <el-text style="color: #62749f;">{{ article.authorInfo.nickName }}</el-text>
-                    <el-text>{{ article.updateTime }}</el-text>
+                    <el-text style="margin-right: auto;">{{ article.updateTime }}</el-text>
+                    <el-text v-if="myself" class="operate">
+                        <el-icon>
+                            <Edit />
+                        </el-icon>
+                        编辑
+                    </el-text>
+                    <el-text v-if="myself" @click="deleteConfirm()" class="operate">
+                        <el-icon>
+                            <Delete />
+                        </el-icon>
+                        删除
+                    </el-text>
                 </div>
                 <el-divider />
                 <MdPreview style="padding: 0;" :modelValue="article.content" />
             </div>
             <div class="author">
-                <Author :authorId="article.authorInfo.id" />
+                <Author :authorId="article.authorInfo.id" :setMySelf="setMySelf" />
                 <AdvTemplate type="Resources" />
                 <AdvTemplate type="HotArticle" />
             </div>
@@ -157,6 +192,12 @@ onMounted(async () => {
                     font-size: 14px;
                     color: #999;
                     margin-right: 10px;
+                }
+                .operate {
+                    cursor: pointer;
+                }
+                .operate:hover {
+                    color: #ff6900;
                 }
             }
             .el-divider {
