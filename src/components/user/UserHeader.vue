@@ -3,6 +3,7 @@ import { onMounted, reactive } from "vue";
 
 import { userApi } from '@/http/api';
 import { fullUrl } from '@/utils/url';
+import emitter from "@/utils/emitter";
 
 const userInfo = reactive({
     id: 0,
@@ -19,7 +20,6 @@ const userInfo = reactive({
     createTime: "",
     updateTime: ""
 });
-
 const getUserInfo = async () => {
     const data = await userApi.getUserInfo();
     Object.assign(userInfo, data);
@@ -39,6 +39,11 @@ const getUserInfo = async () => {
     userInfo.photo = fullUrl(userInfo.photo);
     userInfo.doneDegree = parseInt(`${100 * finish / 3}`);
 }
+const openPersonDataDialog = () => {
+    emitter.emit("changeDialogState", {name: "PersonData", state: true});
+}
+
+defineExpose({getUserInfo});
 
 onMounted(async () => {
     getUserInfo();
@@ -63,7 +68,7 @@ onMounted(async () => {
             <el-text class="info">{{ userInfo.profile }}</el-text>
             <div class="op">
                 <el-text style="margin-right: 50px; font-size: 16px;">个人资料完善度：{{ userInfo.doneDegree }}%</el-text>
-                <el-link style="font-size: 16px;">去编辑></el-link>
+                <el-link style="font-size: 16px;" @click="openPersonDataDialog">去编辑></el-link>
             </div>
             <div class="follow">
                 <div class="follow_item">

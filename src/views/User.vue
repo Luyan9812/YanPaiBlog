@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import UserHeader from '@/components/user/UserHeader.vue';
+import { ref } from "vue";
+import emitter from "@/utils/emitter";
 import Trace from "@/components/user/Trace.vue";
+import UserHeader from '@/components/user/UserHeader.vue';
 import Achievement from "@/components/user/Achievement.vue";
+import PersonDataDialog from "@/components/PersonDataDialog.vue";
+
+const userHeader = ref();
+const updateInfoSuccess = () => {
+    userHeader.value.getUserInfo();
+    emitter.emit("changeDialogState", {name: "PersonData", state: false});
+}
 </script>
 
 <template>
     <div class="user">
-        <UserHeader />
+        <UserHeader ref="userHeader" />
         <div class="content">
             <Trace />
             <Achievement />
         </div>
+        <PersonDataDialog :onSuccess="updateInfoSuccess" />
     </div>
 </template>
 

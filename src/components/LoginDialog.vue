@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import emitter from "@/utils/emitter";
 import { ElMessage } from "element-plus";
-import Dialog from "@/components/Dialog.vue";
+
 import { userApi } from '@/http/api';
+import Dialog from "@/components/Dialog.vue";
 
 const formRef = ref();
 const form = reactive({

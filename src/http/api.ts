@@ -59,6 +59,14 @@ class UserApi {
             method: "GET"
         });
     }
+
+    async updateUserInfo(params: object) {
+        return request({
+            url: "/user/update",
+            method: "PUT",
+            data: params
+        });
+    }
 }
 
 class ArticleApi {
@@ -168,6 +176,14 @@ class ArticleApi {
         return request({
             url: `/article/${articleId}`,
             method: "DELETE"
+        });
+    }
+
+    async deleteFiles(fileNames: Array<string>) {
+        return request({
+            url: `/article/upload/deleteFiles`,
+            method: "DELETE",
+            data: fileNames
         });
     }
 
