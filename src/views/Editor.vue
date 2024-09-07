@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue';
 import 'md-editor-v3/lib/style.css';
 import emitter from "@/utils/emitter";
 import { MdEditor } from 'md-editor-v3';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { FormRules, UploadProps, ElMessage, UploadRawFile, genFileId } from 'element-plus';
 
 import { articleApi } from "@/http/api";
@@ -14,7 +14,8 @@ import { baseURL } from "@/utils/constant";
 
 
 const article = reactive({
-    title: "测试文章",
+    id: 0,
+    title: "",
     picture: "",
     summary: "",
     categoryId: 0,
@@ -23,6 +24,7 @@ const article = reactive({
 });
 const upload = ref();
 const formRef = ref();
+const route = useRoute();
 const router = useRouter();
 const tags = reactive([]);
 const categories = reactive([]);
@@ -32,6 +34,8 @@ const rules = reactive<FormRules>({
     tags: [{required: true, message: '请选择标签'}],
     summary: [{required: true, message: '请输入文章摘要'}]
 });
+const isSave = ref(true);
+const deletePictures: Array<string> = [];
 
 
 const getCategories = async () => {
@@ -49,17 +53,20 @@ const getTagsByCategory = async (categoryId: number) => {
 }
 const handleCategoryChange = (categoryId: number) => {
     tags.length = 0;
-    article.tags.length == 0;
+    article.tags.length = 0;
     getTagsByCategory(categoryId);
 }
 const submitForm = async () => {
     if (!formRef.value) return;
     await formRef.value.validate(async (valid) => {
         if (!valid) return;
-        const data = await articleApi.save(article);
-        if (data) {
-            router.push("/");
+        if (isSave.value) {
+            await articleApi.save(article);
+        } else {
+            await articleApi.updateArticle(article);
         }
+        articleApi.deleteFiles(deletePictures);
+        router.push("/");
     });
 }
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -73,7 +80,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
     article.picture = response.data.url;
 }
 const handleExceed: UploadProps['onExceed'] = (files) => {
-    articleApi.deleteFile(article.picture);
+    deletePictures.push(article.picture);
     upload.value!.clearFiles();
     const file = files[0] as UploadRawFile;
     file.uid = genFileId();
@@ -101,6 +108,16 @@ const onUploadImg = async (files: FileList, callback: (urls: string[]) => void) 
 
 onMounted(async () => {
     getCategories();
+    const articleId = route.params.articleId;
+    if (articleId) {
+        isSave.value = false;
+        const data = await articleApi.getArticleDetails(articleId);
+        Object.assign(article, data);
+        getTagsByCategory(article.categoryId);
+        article.tags = article.tags.map((tag) => {
+            return tag.id;
+        });
+    }
 });
 </script>
 

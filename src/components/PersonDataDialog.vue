@@ -50,7 +50,7 @@ const submitForm = async () => {
     await formRef.value.validate(async (valid) => {
         if (!valid) return;
         await userApi.updateUserInfo(formData);
-        await articleApi.deleteFiles(deletePhotos);
+        articleApi.deleteFiles(deletePhotos);
         props.onSuccess();
     });
 }

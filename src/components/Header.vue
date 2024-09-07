@@ -8,6 +8,7 @@
     import { tokenMgr } from '@/utils/token';
     import { tokenStr } from '@/utils/constant';
     import LoginDialog from "@/components/LoginDialog.vue";
+import { ElMessage } from "element-plus";
     
     const isLogin = ref(false);
     const router = useRouter();
@@ -42,7 +43,7 @@
         if (tokenMgr.hasToken()) {
             navigateTo('/editor');
         } else {
-            changeLoginState(true);
+            ElMessage.error("登录后开启功能");
         }
     }
 

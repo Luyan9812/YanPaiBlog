@@ -12,6 +12,7 @@ import noHeartIcon from "@/assets/heart_dark.png";
 
 import { fullUrl } from "@/utils/url";
 import { articleApi } from "@/http/api";
+import { tokenMgr } from "@/utils/token";
 
 import Author from "@/components/Author.vue";
 import AdvTemplate from "@/components/advs/AdvTemplate.vue";
@@ -42,6 +43,10 @@ const getArticleDetails = async () => {
     Object.assign(article, data);
 }
 const changeUserState = async (type: string) => {
+    if (!tokenMgr.hasToken()) {
+        ElMessage.error("登录后开启功能");
+        return;
+    }
     if (type === 'praise') {
         await articleApi.changePraiseState(article.id, !article.hasPraised);
         article.hasPraised = !article.hasPraised;
@@ -71,6 +76,9 @@ const deleteConfirm = () => {
         router.push("/");
     })
 }
+const edit = () => {
+    router.push(`/editor/${article.id}`);
+}
 
 onMounted(async () => {
     getArticleDetails();
@@ -94,7 +102,7 @@ onMounted(async () => {
                     <el-avatar :src="fullUrl(article.authorInfo.photo)" />
                     <el-text style="color: #62749f;">{{ article.authorInfo.nickName }}</el-text>
                     <el-text style="margin-right: auto;">{{ article.updateTime }}</el-text>
-                    <el-text v-if="myself" class="operate">
+                    <el-text v-if="myself" @click="edit" class="operate">
                         <el-icon>
                             <Edit />
                         </el-icon>

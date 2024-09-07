@@ -3,6 +3,8 @@ import { reactive, ref, watch } from "vue";
 
 import { userApi } from "@/http/api";
 import { fullUrl } from "@/utils/url";
+import { tokenMgr } from "@/utils/token";
+import { ElMessage } from "element-plus";
 
 const btnDisabled = ref(false);
 const props = defineProps(["authorId", "setMySelf"]);
@@ -33,6 +35,10 @@ const getAuthorInfo = async (authorId: number) => {
     props.setMySelf(authorInfo.myself);
 }
 const changeFollowState = async () => {
+    if (!tokenMgr.hasToken()) {
+        ElMessage.error("登录后开启功能");
+        return;
+    }
     btnDisabled.value = true;
     const authorId = authorInfo.userId;
     const followState = !authorInfo.hasFollowed;

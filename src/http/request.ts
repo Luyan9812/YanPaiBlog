@@ -37,6 +37,7 @@ service.interceptors.response.use(
                 window.location.href = '/';
                 return null;
             }
+			return Promise.reject(response);
 		}
         return res.data
 	},

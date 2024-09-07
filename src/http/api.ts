@@ -209,6 +209,14 @@ class ArticleApi {
             params: {title, currentPage}
         });
     }
+
+    async updateArticle(article: object) {
+        return request({
+            url: "/article/update",
+            method: "PUT",
+            data: article
+        });
+    }
 }
 
 export const userApi = new UserApi();
