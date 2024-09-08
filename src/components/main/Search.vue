@@ -33,7 +33,7 @@ onMounted(async () => {
 <template>
     <div class="seh_ext">
         <div class="seh_container">
-            <Switcher :tabs="types" :border="false" :onSelect="handleSwitchType" />
+            <Switcher :tabs="types" :onSelect="handleSwitchType" />
             <el-input
                 v-model="searchKey"
                 style="width: 240px; margin-left: auto;"

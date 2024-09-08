@@ -67,6 +67,14 @@ class UserApi {
             data: params
         });
     }
+
+    async getMessages(type: number) {
+        return request({
+            url: "/user/messages",
+            method: "GET",
+            params: {type}
+        });
+    }
 }
 
 class ArticleApi {

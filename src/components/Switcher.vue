@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 
-const props = defineProps(["onSelect", "border", "tabs"]);
-const style = reactive({
+const props = defineProps(["onSelect", "border", "bold", "tabs"]);
+const commonStyle = reactive({
+    bold: true,
+});
+const selectStyle = reactive({
     tab_active: true,
-    border: props.border,
+    border: false,
 });
 const selected = ref(0);
 const onTabSelect = (id: number) => {
@@ -13,6 +16,12 @@ const onTabSelect = (id: number) => {
 }
 
 onMounted(() => {
+    if (props.bold !== undefined) {
+        commonStyle.bold = props.bold;
+    }
+    if (props.border !== undefined) {
+        selectStyle.border = props.border;
+    }
     if (props.tabs.length > 0) {
         selected.value = props.tabs[0].id;
     }
@@ -22,7 +31,7 @@ onMounted(() => {
 <template>
     <div class="switcher_container">
         <p v-for="tab in tabs" :key="tab.id" 
-          :class="selected === tab.id ? style : {}" 
+          :class="[selected === tab.id ? selectStyle : {}, commonStyle]" 
           @click="onTabSelect(tab.id)">
             {{ tab.title }}
         </p>
@@ -36,8 +45,7 @@ onMounted(() => {
     p {
         height: 50px;
         color: #000;
-        font-size: 18px;
-        font-weight: 500;
+        font-size: 16px;
         line-height: 50px;
         margin: 0 50px 0 0;
         cursor: pointer;
@@ -50,6 +58,10 @@ onMounted(() => {
     }
     .border {
         border-bottom: 4px solid #ff8721;
+    }
+    .bold {
+        font-size: 18px;
+        font-weight: 500;
     }
 }
 </style>
