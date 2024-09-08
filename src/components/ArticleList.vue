@@ -2,6 +2,7 @@
 import { onMounted, reactive } from "vue";
 
 import { fullUrl } from "@/utils/url";
+import Empty from "@/assets/Empty.png";
 
 
 defineProps(["pageInfo", "changePage"]);
@@ -10,39 +11,42 @@ defineProps(["pageInfo", "changePage"]);
 <template>
     <div class="al_ext">
         <div class="al_container">
-            <div v-for="article in pageInfo.records" :key="article.id" class="article_item">
-                <div class="item_content">
-                    <div class="cl">
-                        <el-link :href="'/article/' + article.id" :underline="false">{{ article.title }}</el-link>
-                        <el-text line-clamp="2">
-                            {{ article.summary }}
-                        </el-text>
+            <template v-if="pageInfo.records.length > 0">
+                <div v-for="article in pageInfo.records" :key="article.id" class="article_item">
+                    <div class="item_content">
+                        <div class="cl">
+                            <el-link :href="'/article/' + article.id" :underline="false">{{ article.title }}</el-link>
+                            <el-text line-clamp="2">
+                                {{ article.summary }}
+                            </el-text>
+                        </div>
+                        <el-image v-if="article.picture" :src="fullUrl(article.picture)" />
                     </div>
-                    <el-image v-if="article.picture" :src="fullUrl(article.picture)" />
+                    <div class="item_author">
+                        <el-avatar :src="fullUrl(article.authorInfo.photo)"/>
+                        <el-text class="name">{{ article.authorInfo.nickName }}</el-text>
+                        <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
+                        <el-text class="eye">
+                            <el-icon><View /></el-icon>
+                            {{ article.readNum }}
+                        </el-text>
+                        <el-text class="eye" style="margin-right: auto;">
+                            <el-icon><Star /></el-icon>
+                            {{ article.collectionNum }}
+                        </el-text>
+                        <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
+                        <template v-for="(tag, i) in article.tags" :key="tag.id">
+                            <span style="font-size: 12px;">{{ i > 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "" }}</span>
+                            <el-link :href="`/results?tag=${tag.id}`" :underline="false">
+                                {{ tag.tagName }}
+                            </el-link>
+                        </template>
+                    </div>
+                    <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
                 </div>
-                <div class="item_author">
-                    <el-avatar :src="fullUrl(article.authorInfo.photo)"/>
-                    <el-text class="name">{{ article.authorInfo.nickName }}</el-text>
-                    <el-text style="color: #97a3b7;">{{ article.updateTime }}</el-text>
-                    <el-text class="eye">
-                        <el-icon><View /></el-icon>
-                        {{ article.readNum }}
-                    </el-text>
-                    <el-text class="eye" style="margin-right: auto;">
-                        <el-icon><Star /></el-icon>
-                        {{ article.collectionNum }}
-                    </el-text>
-                    <el-icon style="color: #212529; font-size: 12px; margin-right: 5px;"><PriceTag /></el-icon>
-                    <template v-for="(tag, i) in article.tags" :key="tag.id">
-                        <span style="font-size: 12px;">{{ i > 0 ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "" }}</span>
-                        <el-link :href="`/results?tag=${tag.id}`" :underline="false">
-                            {{ tag.tagName }}
-                        </el-link>
-                    </template>
-                </div>
-                <el-divider style="margin-top: 15px; margin-bottom: 5px;" />
-            </div>
-            <el-pagination background layout="prev, pager, next" :page-size="10" :total="pageInfo.total" @current-change="changePage" />
+                <el-pagination background layout="prev, pager, next" :page-size="10" :total="pageInfo.total" @current-change="changePage" />
+            </template>
+            <el-image v-else :src="Empty" />
         </div>
     </div>
 </template>
@@ -129,6 +133,10 @@ defineProps(["pageInfo", "changePage"]);
         }
         .el-pagination {
             margin: 20px 0;
+        }
+
+        .el-image {
+            width: 300px;
         }
     }
 }

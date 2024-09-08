@@ -36,7 +36,10 @@ service.interceptors.response.use(
                 tokenMgr.removeToken();
                 window.location.href = '/';
                 return null;
-            }
+            } else if (res.code === 31) {  // 请求资源不存在
+				window.location.href = "/404";
+				return null;
+			}
 			return Promise.reject(response);
 		}
         return res.data

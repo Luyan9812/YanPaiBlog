@@ -18,7 +18,7 @@ const router = createRouter({
       component: () => import("../views/User.vue")
     },
     {
-      path: '/editor/:articleId',
+      path: '/editor/:articleId?',
       name: 'editor',
       component: () => import("../views/Editor.vue")
     },
@@ -31,6 +31,11 @@ const router = createRouter({
       path: "/results",
       name: "results",
       component: () => import("../views/Result.vue")
+    },
+    {
+      path: "/:catchAll(.*)",
+      name: "404",
+      component: () => import("../views/NotFound.vue")
     },
   ]
 });

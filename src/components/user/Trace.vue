@@ -3,14 +3,15 @@ import { onMounted, reactive, ref } from "vue";
 
 import { articleApi } from "@/http/api";
 import Follow from "@/components/user/Follow.vue";
+import Switcher from "@/components/Switcher.vue";
 import ArticleList from "@/components/ArticleList.vue";
 
 
 const tabs = reactive([
-    {id: 1, title: "文章", active: true},
-    {id: 2, title: "浏览记录", active: false},
-    {id: 3, title: "关注", active: false},
-    {id: 4, title: "收藏", active: false},
+    {id: 1, title: "文章"},
+    {id: 2, title: "浏览记录"},
+    {id: 3, title: "关注"},
+    {id: 4, title: "收藏"},
 ]);
 const pageInfo = reactive({
     current: 1,
@@ -44,9 +45,6 @@ const getArticleList = async (currentPage: number) => {
 
 const selectedTab = ref(1);
 const selectTab = (id: number) => {
-    tabs.map(tab => {
-        tab.active = (id === tab.id);
-    });
     selectedTab.value = id;
     getArticleList(1);
 }
@@ -59,9 +57,7 @@ onMounted(async () => {
 <template>
     <div class="trace_container">
         <div class="header">
-            <p v-for="tab in tabs" :key="tab.id" :class="{'tab_active': tab.active}" @click="selectTab(tab.id)">
-                {{ tab.title }}
-            </p>
+            <Switcher :tabs="tabs" :border="true" :onSelect="selectTab" />
         </div>
         <el-divider />
         <ArticleList v-if="selectedTab !== 3" :pageInfo="pageInfo" :changePage="changePage" />
@@ -81,23 +77,6 @@ onMounted(async () => {
             display: flex;
             padding: 0 20px;
             box-sizing: border-box;
-
-            p {
-                height: 50px;
-                color: #000;
-                font-size: 18px;
-                font-weight: 500;
-                line-height: 50px;
-                margin: 0 50px 0 0;
-                cursor: pointer;
-            }
-            p:hover {
-                color: #ff8721;
-            }
-            .tab_active {
-                color: #ff8721;
-                border-bottom: 4px solid #ff8721;
-            }
         }
 
         .el-divider {

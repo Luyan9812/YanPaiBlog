@@ -4,31 +4,28 @@ import { Search } from '@element-plus/icons-vue';
 
 import { articleApi } from "@/http/api";
 import { useRouter } from "vue-router";
+import Switcher from "@/components/Switcher.vue";
 
 const router = useRouter();
 const props = defineProps(["changeCategory"]);
 
-const title = ref("");
+const searchKey = ref("");
 const types = reactive([]);
 const handleSwitchType = async (id: number) => {
-    types.map((type) => {
-        type.active = type.id == id;
-    });
     props.changeCategory(id);
 }
 const searchChange = () => {
-    if (title.value.trim()) {
-        router.push(`/results?title=${title.value.trim()}`)
+    if (searchKey.value.trim()) {
+        router.push(`/results?title=${searchKey.value.trim()}`)
     }
 }
 
 onMounted(async () => {
     const data = await articleApi.getCategoriesHavingArticles();
     types.length = 0;
-    types.push({id: 0, categoryName: "全部", active: true});
+    types.push({id: 0, title: "全部"});
     data.forEach(element => {
-        element.active = false;
-        types.push(element);
+        types.push({id: element.id, title: element.categoryName});
     });
 });
 </script>
@@ -36,14 +33,9 @@ onMounted(async () => {
 <template>
     <div class="seh_ext">
         <div class="seh_container">
-            <template v-for="type in types" :key="type.id">
-                <div @click="handleSwitchType(type.id)" 
-                    :class="{'types': true, 'types_active': type.active}">
-                    {{ type.categoryName }}
-                </div>
-            </template>
+            <Switcher :tabs="types" :border="false" :onSelect="handleSwitchType" />
             <el-input
-                v-model="title"
+                v-model="searchKey"
                 style="width: 240px; margin-left: auto;"
                 placeholder="键入搜索"
                 @change="searchChange()"
