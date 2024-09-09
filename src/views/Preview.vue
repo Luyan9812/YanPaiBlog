@@ -10,7 +10,7 @@ import noPraisedIcon from "@/assets/praise_dark.png";
 import heartIcon from "@/assets/heart.png";
 import noHeartIcon from "@/assets/heart_dark.png";
 
-import { fullUrl } from "@/utils/url";
+import { fullUrl, rewriteArticleContent } from "@/utils/url";
 import { articleApi } from "@/http/api";
 import { tokenMgr } from "@/utils/token";
 
@@ -41,6 +41,7 @@ const getArticleDetails = async () => {
     const articleId = route.params.articleId;
     const data = await articleApi.getArticleDetails(articleId);
     Object.assign(article, data);
+    article.content = rewriteArticleContent(article.content);
 }
 const changeUserState = async (type: string) => {
     if (!tokenMgr.hasToken()) {

@@ -1,36 +1,46 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 
-const resources = reactive([
-    {id: 1, name: "高并发手册", content: "内容肝、配图美、可读性高，高并发经典之作！", bannerUrl: "https://img11.360buyimg.com/ddimg/jfs/t1/159287/38/34144/95370/63c7ee9aFc184be3d/94e07dc5dd5b573f.png", jumpUrl: "", updateTime: "2024/07/24"},
-    {id: 2, name: "高并发手册", content: "内容肝、配图美、可读性高，高并发经典之作！", bannerUrl: "https://img11.360buyimg.com/ddimg/jfs/t1/159287/38/34144/95370/63c7ee9aFc184be3d/94e07dc5dd5b573f.png", jumpUrl: "", updateTime: "2024/07/24"},
-]);
+import { fullUrl } from "@/utils/url";
+import { configApi } from "@/http/api";
+
+const resources = reactive([]);
+
+onMounted(async () => {
+    const data = await configApi.getConfigByType(2);
+    resources.length = 0;
+    data.forEach(element => {
+        resources.push(element);
+    });
+});
 </script>
 
 <template>
-    <el-row v-for="res in resources" :key="res.id">
-        <el-col :span="8">
-            <el-image :src="res.bannerUrl" />
-        </el-col>
-        <el-col :span="16">
+    <div class="res_item"  v-for="res in resources" :key="res.id">
+        <el-image :src="fullUrl(res.bannerUrl)" />
+        <div class="text">
             <a :href="res.jumpUrl">{{ res.name }}</a>
             <span>{{ res.content }}</span>
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 </template>
 
 <style lang="scss" scoped>
-    .el-row {
-        width: 100%;
-        padding: 0 20px;
-        margin-top: 10px;
-        box-sizing: border-box;
+.res_item {
+    margin-top: 10px;
+    padding: 0 20px;
+    display: flex;
+    box-sizing: border-box;
 
-        .el-image {
-            width: 75px;
-            height: 100px;
-        }
+    .el-image {
+        width: 75px;
+        height: 100px;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
 
+    .text {
         a {
             font-size: 16px;
             font-weight: 600;
@@ -49,4 +59,5 @@ const resources = reactive([
             color: #999;
         }
     }
+}
 </style>

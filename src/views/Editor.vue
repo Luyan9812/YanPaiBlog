@@ -8,7 +8,7 @@ import { FormRules, UploadProps, ElMessage, UploadRawFile, genFileId } from 'ele
 
 import { articleApi } from "@/http/api";
 import Dialog from "@/components/Dialog.vue";
-import { fullUrl } from "@/utils/url";
+import { fullUrl, rewriteArticleContent } from "@/utils/url";
 import { tokenMgr } from "@/utils/token";
 import { baseURL } from "@/utils/constant";
 
@@ -117,6 +117,7 @@ onMounted(async () => {
         article.tags = article.tags.map((tag) => {
             return tag.id;
         });
+        article.content = rewriteArticleContent(article.content);
     }
 });
 </script>

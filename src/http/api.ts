@@ -227,5 +227,16 @@ class ArticleApi {
     }
 }
 
+class ConfigApi {
+    async getConfigByType(type: number) {
+        return request({
+            url: "/config/type",
+            method: "GET",
+            params: {type}
+        });
+    }
+}
+
 export const userApi = new UserApi();
+export const configApi = new ConfigApi();
 export const articleApi = new ArticleApi();
