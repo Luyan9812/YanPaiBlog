@@ -1,22 +1,28 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 
-const recommends = reactive([
-    {id: 1, name: "分布式系统的特征、瓶颈以及性能指标介绍", bannerUrl: "https://cdn.tobebetterjavaer.com/paicoding/8b5865e9461948aed4aacffc62adbae7.jpg", jumpUrl: "", updateTime: "2024/07/24"},
-    {id: 2, name: "分布式系统的特征、瓶颈以及性能指标介绍", bannerUrl: "https://cdn.tobebetterjavaer.com/paicoding/71505c62fb6375cbbd62af63964b2ad4.jpg", jumpUrl: "", updateTime: "2024/07/24"},
-    {id: 3, name: "分布式系统的特征、瓶颈以及性能指标介绍", bannerUrl: "https://cdn.tobebetterjavaer.com/paicoding/147915cdddea55ce37c2c5ecfc7c089e.jpg", jumpUrl: "", updateTime: "2024/07/24"},
-    {id: 4, name: "分布式系统的特征、瓶颈以及性能指标介绍", bannerUrl: "https://cdn.tobebetterjavaer.com/paicoding/dee73c8810cb699ae1ec774a54612080.jpg", jumpUrl: "", updateTime: "2024/07/24"}
-]);
+import { fullUrl } from "@/utils/url";
+import { configApi } from "@/http/api";
+
+const recommends = reactive([]);
+
+onMounted(async () => {
+    const data = await configApi.getConfigByType(1);
+    recommends.length = 0;
+    data.forEach(element => {
+        recommends.push(element);
+    });
+});
 </script>
 
 <template>
     <div class="rmd_ext">
         <div class="rmd_container">
             <div v-for="item in recommends" :key="item.id" class="list_item">
-                <el-image :src="item.bannerUrl" fit="fill" style="width: 100%; height: 150px;" />
+                <el-image :src="fullUrl(item.bannerUrl)" fit="fill" style="width: 100%; height: 150px;" />
                 <div class="item_content">
                     <el-link :href="item.jumpUrl" :underline="false">{{ item.name }}</el-link>
-                    <div class="author">
+                    <div class="author" style="margin-top: auto;">
                         <div></div>
                         <el-text>管理员</el-text>
                     </div>
@@ -54,17 +60,20 @@ const recommends = reactive([
 
             .item_content {
                 width: 100%;
+                height: 160px;
                 padding: 20px;
-                position: relative;
-                top: -6px;
+                padding-bottom: 10px;
                 box-sizing: border-box;
+                position: relative;
+                top: -5.5px;
+                display: flex;
+                flex-direction: column;
 
-                a {
-                    font-size: 20px;
+                .el-link {
+                    font-size: 18px;
                     font-weight: 500;
-                    margin-bottom: 15px;
                 }
-                a:hover {
+                .el-link:hover {
                     color: #ff8721;
                 }
 
