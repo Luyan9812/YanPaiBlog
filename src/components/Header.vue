@@ -58,7 +58,8 @@ import { ElMessage } from "element-plus";
 <template>
     <div class="hd_ext">
         <div class="hd_container">
-            <img src="@/assets/logo.svg" style="margin-right: auto;" @click="navigateTo('/index')" />
+            <img src="@/assets/logo.png" @click="navigateTo('/index')" />
+            <el-text @click="navigateTo('/index')">研派博客</el-text>
             <el-button color="#ff6900" class="publish_btn" @click="edit">写文章</el-button>
             <el-link v-if="!isLogin" :underline="false" class="login_btn" @click="changeLoginState(true)">登录</el-link>
             <template v-else>
@@ -99,6 +100,16 @@ import { ElMessage } from "element-plus";
         display: flex; 
         align-items: center;
         box-sizing: border-box;
+
+        .el-text {
+            font-size: 24px;
+            margin-left: 10px;
+            font-weight: bold;
+            margin-right: auto;
+            background: linear-gradient(to right, #fec163, #de4313);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
 
         .publish_btn {
             color: #fff;
