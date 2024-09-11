@@ -44,6 +44,7 @@ const changeFollowState = async () => {
     const followState = !authorInfo.hasFollowed;
     await userApi.changeFollowState(authorId, followState);
     btnDisabled.value = false;
+    authorInfo.hasFollowed = followState;
 }
 
 watch(() => props.authorId, async (val) => {

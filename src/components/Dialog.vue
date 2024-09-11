@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import emitter from "@/utils/emitter";
 
 const isShow = ref(false)
@@ -11,15 +11,18 @@ const close = () => {
     }
 }
 
-emitter.on("changeDialogState", (obj: any) => {
-    if (props.name === obj.name) {
-        isShow.value = obj.state;
-    }
-})
-
+onMounted(() => {
+    emitter.on("changeDialogState", (obj: any) => {
+        console.log(obj);
+        
+        if (props.name === obj.name) {
+            isShow.value = obj.state;
+        }
+    });
+});
 onUnmounted(() => {
     emitter.off("changeDialogState")
-})
+});
 </script>
 
 <template>
