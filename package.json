@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "type-check": "vue-tsc --build --force",
+    "push": "npm run build && scp -r dist/* root@47.96.95.64:/usr/local/devEnv/vue_app/yan_pai_blog"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
